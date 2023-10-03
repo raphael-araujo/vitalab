@@ -6,3 +6,8 @@ body {
 p {
     color: var(--light-color);
 }
+
+.link {
+    color: var(--light-color);
+    text-decoration: none;
+}
