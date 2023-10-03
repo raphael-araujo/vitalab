@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block 'title' %}Cadastro | VitaLab{% endblock  %}
+
+{% block 'conteudo' %}
+    <div class="container">
+        <br>
+        <br>
+        <h3 class="font-destaque">Cadastre-se</h3>
+            <br>
+            <br>
+            {% if messages %}
+                {% for message in messages %}
+                <div align="center" class="alert {{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+            <br>
+            <div class="row">
+                <div class="col-md-3">
+                    <img src="{% static 'base/img/logo.png' %}" alt="Logo vitalab">
+                </div>
+
+                <div class="col-md-9">
+                    <br>
+                    <form action="{% url "cadastro" %}" method="POST"> {% csrf_token %}
+                    <label>Nome:</label>
+                    <br>
+                    <input type="text" class="input-default" name="primeiro_nome" required>
+                    <br>
+                    <br>
+                    <label>Sobrenome:</label>
+                    <br>
+                    <input type="text" class="input-default" name="sobrenome" required>
+                </div>
+            </div>
+            <br>
+            <br>
+            <div class="row">
+                <div class="col-md-4">
+                    <label>Username:</label>
+                    <br>
+                    <input type="text" class="input-default w100" name="username" required>
+                    <br>
+                    <br>
+                    <label>E-mail:</label>
+                    <br>
+                    <input type="email" class="input-default w100" name="email" required>
+                    <br>
+                </div>
+
+                <div class="col-md-4">
+                    <label>Senha:</label>
+                    <br>
+                    <input type="password" class="input-default w100" name="senha" required>
+                    <br>
+                    <br>
+                    <label>Confirmar senha:</label>
+                    <br>
+                    <input type="password" class="input-default w100" name="confirmar_senha" required>
+                </div>
+            </div>
+            <br>
+            <br>
+            <input type="submit" class="btn-default">
+    </form>
+    </div>
+{% endblock %}

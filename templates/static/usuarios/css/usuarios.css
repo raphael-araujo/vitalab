@@ -1,0 +1,8 @@
+body {
+    background-image: url('/static/base/img/bg1.png');
+    background-size: cover;
+}
+
+p {
+    color: var(--light-color);
+}
