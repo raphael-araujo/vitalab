@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block 'title' %}Login | Vitalab{% endblock  %}
+
+{% block 'conteudo' %}
+    <div class="container">
+
+        <h3 class="font-destaque-secundaria"> <img width="10%" src="{% static 'base/img/logo.png' %}" alt="Logo">Login</h3>
+
+        {% if messages %}
+            <br>
+            {% for message in messages %}
+                <div align="center" class="alert {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <div>
+            <form action="{% url 'login' %}" method="POST"> {% csrf_token %}
+                <label>Username ou E-mail:</label>
+                <br>
+                <input type="text" class="input-default" name="username" required>
+                <br>
+                <br>
+                <br>
+                <label>Senha:</label>
+                <br>
+                <input type="password" class="input-default" name="senha" required>
+                <br>
+                <br>
+                <a href="{% url 'cadastro' %}" class="link">Cadastre-se</a>
+                <br>
+                <br>
+                <input type="submit" class="btn-default" value="Login">
+            </form>
+        </div>
+    </div>
+{% endblock %}
