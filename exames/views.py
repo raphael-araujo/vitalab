@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
 from django.http import HttpRequest, HttpResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 
 from .models import PedidoExame, SolicitacaoExame, TipoExame
 
@@ -53,3 +53,26 @@ def fechar_pedido(request: HttpRequest) -> HttpResponse:
 
         messages.success(request, 'Pedido de exame concluído com sucesso.')
         return redirect(to='gerenciar_pedidos')
+
+
+@login_required(login_url='login')
+def gerenciar_pedidos(request: HttpRequest) -> HttpResponse:
+    pedidos_exames = PedidoExame.objects.filter(usuario=request.user)
+    context = {
+        'pedidos_exames': pedidos_exames
+    }
+    return render(request, 'gerenciar_pedidos.html', context)
+
+
+@login_required(login_url='login')
+def cancelar_pedido(request: HttpRequest, pedido_id: int) ->HttpResponse:
+    pedido = get_object_or_404(PedidoExame, id=pedido_id)
+
+    if pedido.usuario != request.user:
+        messages.error(request, 'Esse pedido não é seu!')
+
+    pedido.agendado = False
+    pedido.save()
+    messages.warning(request, 'Pedido cancelado com sucesso.')
+
+    return redirect(to='gerenciar_pedidos')

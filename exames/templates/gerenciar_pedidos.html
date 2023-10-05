@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block 'title' %}Gerenciar Pedidos | Vitalab{% endblock  %}
+
+{% block 'conteudo' %}
+    <br> 
+    <br>
+    <div class="container">
+        {% if messages %}
+            <br>
+            {% for message in messages %}
+            <div class="alert {{ message.tags }}" align="center">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        <div class="card card-view">
+            {% if pedidos_exames %}
+                <table>
+                    <tr align="center">
+                        <th>Solicitação</th>
+                        <th>Data</th>
+                        <th>Exames</th>
+                        <th>Ação</th>
+                    </tr>
+                    {% for pedidos in pedidos_exames %}
+                        <tr class="linha-tabela" align="center">
+                            <td>#{{pedidos.id}}</td>
+                            <td>{{pedidos.data}}</td>
+                            <td>
+                                <select class="form-select">
+                                    {% for exame in pedidos.exames.all %}
+                                        <option style="color: black"  value="{{pedidos.id}}">{{exame.exame.nome}}</option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                            <td>
+                                <a href="{% url "cancelar_pedido" pedidos.id %}" class="btn btn-danger {% if not pedidos.agendado %} disabled {% endif %}">Cancelar pedido</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            {% else %}
+                <h4>Não existem pedidos de exames.</h4>
+            {% endif %}
+        </div>
+    </div>
+
+{% endblock 'conteudo' %}
