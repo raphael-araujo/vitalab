@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block 'title' %}Senha do exame | Vitalab{% endblock  %}
+
+{% block 'conteudo' %}
+    <br>
+    <br>
+    <div class="container">
+        {% if messages %}
+            <br>
+            {% for message in messages %}
+            <div class="alert {{ message.tags }}" align="center">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        <h3>{{exame.exame.nome}}</h3>
+        <br>
+        <form action="{% url "solicitar_senha_exame" exame.id %}" method="POST"> {% csrf_token %}
+            <label>Senha de acesso</label>
+            <br>
+            <input type="password" name="senha" class="form-control" style="width: 40%" required>
+            <br>
+            <input type="submit" class="btn-default">
+        </form>
+    </div>
+
+{% endblock 'conteudo' %}

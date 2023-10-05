@@ -6,6 +6,8 @@ from django.db.models import Sum
 from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
+from usuarios.utils import escape
+
 from .models import PedidoExame, SolicitacaoExame, TipoExame
 
 
@@ -96,3 +98,18 @@ def abrir_exame(request:HttpRequest, exame_id: int) -> HttpResponse:
         return redirect(to='solicitar_senha_exame', exame_id=exame.id)
 
     raise Http404('O exame não existe.')
+
+
+@login_required(login_url='login')
+def solicitar_senha_exame(request: HttpRequest, exame_id: int) -> HttpResponse:
+    exame = get_object_or_404(SolicitacaoExame, id=exame_id, usuario=request.user)
+
+    if request.method == 'POST':
+        senha = escape(request.POST['senha'])
+
+        if senha == exame.senha:
+            return redirect(exame.resultado.url)
+
+        messages.error(request, 'Senha inválida!')
+
+    return render(request, 'solicitar_senha_exame.html', {'exame': exame})
