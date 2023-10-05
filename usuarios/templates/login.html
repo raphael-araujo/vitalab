@@ -1,7 +1,11 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block 'title' %}Login | Vitalab{% endblock  %}
+{% block 'head' %}
+        <link href="{% static 'usuarios/css/usuarios.css' %}" rel="stylesheet">
+{% endblock  %}
+
+{% block 'title' %}Login | Vitalab{% endblock %}
 
 {% block 'conteudo' %}
     <div class="container">

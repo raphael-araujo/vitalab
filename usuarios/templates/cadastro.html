@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block 'head' %}
+        <link href="{% static 'usuarios/css/usuarios.css' %}" rel="stylesheet">
+{% endblock  %}
+
 {% block 'title' %}Cadastro | VitaLab{% endblock  %}
 
 {% block 'conteudo' %}
