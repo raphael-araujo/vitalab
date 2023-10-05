@@ -3,8 +3,8 @@ from datetime import datetime
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
-from django.http import HttpRequest, HttpResponse
-from django.shortcuts import redirect, render, get_object_or_404
+from django.http import Http404, HttpRequest, HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
 
 from .models import PedidoExame, SolicitacaoExame, TipoExame
 
@@ -76,3 +76,23 @@ def cancelar_pedido(request: HttpRequest, pedido_id: int) ->HttpResponse:
     messages.warning(request, 'Pedido cancelado com sucesso.')
 
     return redirect(to='gerenciar_pedidos')
+
+
+@login_required(login_url='login')
+def gerenciar_exames(request: HttpRequest) -> HttpResponse:
+    exames = SolicitacaoExame.objects.filter(usuario=request.user)
+
+    return render(request, 'gerenciar_exames.html', {'exames': exames})
+
+
+@login_required(login_url='login')
+def abrir_exame(request:HttpRequest, exame_id: int) -> HttpResponse:
+    exame = get_object_or_404(SolicitacaoExame, id=exame_id, usuario=request.user)
+
+    if exame.resultado:
+        if not exame.requer_senha:
+            return redirect(to=exame.resultado.url)
+
+        return redirect(to='solicitar_senha_exame', exame_id=exame.id)
+
+    raise Http404('O exame não existe.')
