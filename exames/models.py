@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.utils.safestring import mark_safe
 
 
 class TipoExame(models.Model):
@@ -31,6 +32,16 @@ class SolicitacaoExame(models.Model):
     resultado = models.FileField(upload_to='resultados', null=True, blank=True)
     requer_senha = models.BooleanField(default=False)
     senha = models.CharField(max_length=6, null=True, blank=True)
+
+    def badge_template(self):
+        if self.status == 'E':
+            classes_css = 'bg-warning text-dark'
+            texto = "Em análise"
+        elif self.status == 'F':
+            classes_css = 'bg-success'
+            texto = "Finalizado"
+        
+        return mark_safe(f"<span class='badge bg-primary {classes_css}'>{texto}</span>")
 
     def __str__(self) -> str:
         return f'{self.usuario} | {self.exame.nome}'
