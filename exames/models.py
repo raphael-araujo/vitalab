@@ -1,5 +1,10 @@
+from datetime import timedelta
+from secrets import token_urlsafe
+
 from django.contrib.auth.models import User
 from django.db import models
+from django.shortcuts import redirect
+from django.utils import timezone
 from django.utils.safestring import mark_safe
 
 
@@ -55,3 +60,33 @@ class PedidoExame(models.Model):
 
     def __str__(self) -> str:
         return f'{self.usuario} | {self.data}'
+
+
+class AcessoMedico(models.Model):
+    usuario = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    identificacao = models.CharField(max_length=50)
+    tempo_de_acesso = models.TimeField()
+    criado_em = models.DateTimeField()
+    data_exames_iniciais = models.DateField()
+    data_exames_finais = models.DateField()
+    token = models.CharField(max_length=20)
+
+    @property
+    def status(self):
+        return (
+            'Expirado'
+            if timezone.now() > (self.criado_em + timedelta(hours=self.tempo_de_acesso.hour))
+            else 'Ativo'
+        )
+
+    @property
+    def url(self):
+        return redirect(to='acesso_medico', token=self.token)
+
+    def save(self, *args, **kwargs):
+        if not self.token:
+            self.token = token_urlsafe(6)
+        super(AcessoMedico, self).save(*args, **kwargs)
+
+    def __str__(self) -> str:
+        return self.token
