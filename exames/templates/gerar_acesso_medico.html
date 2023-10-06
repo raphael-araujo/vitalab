@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block 'title' %}Gerar acesso médico | Vitalab{% endblock  %}
+
+{% block 'conteudo' %}
+    <br>
+    <br>
+    <div class="container">
+        {% if messages %}
+            <br>
+            {% for message in messages %}
+                <div class="alert {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        <div class="row">
+            <div class="col-md-5">
+                <h3>Gerar acesso médico</h3>
+                <form action="{% url 'gerar_acesso_medico' %}" method="POST">{% csrf_token %}
+                    <label for="">Identificação</label>
+                    <br>
+                    <input style="width: 100%" type="text" name="identificacao" id="" class="input-default" required>
+                    <br>
+                    <br>
+                    <label for="">Tempo de acesso (em horas)</label>
+                    <br>
+                    <input style="width: 100%" type="time" name="tempo_de_acesso" id="" class="input-default" required>
+                    <br>
+                    <br>
+                    <div class="row">
+                        <label for="">Acesso a exames realizados entre:</label>
+                        <div class="col-md">
+                            <br>
+                            <label for="data_inicial">Data inicial:</label>
+                            <input style="width: 100%" type="date" name="data_exame_inicial" id="data_inicial" class="input-default" required>
+                        </div>
+                        <div class="col-md">
+                            <br>
+                            <label for="data_final">Data Final:</label>
+                            <input style="width: 100%" type="date" name="data_exame_final" id="data_final" class="input-default" required>
+                            <br>
+                            <br>
+                        </div>
+                    </div>
+                    <input style="width: 40%" type="submit" class="btn-default" value="Gerar link">
+                </form>
+            </div>
+            <div class="col-md">
+                <div class="card">
+                    <table style="text-align: center">
+                        <tr>
+                            <th>ID</th>
+                            <th>Status</th>
+                        </tr>
+                        {% for acesso in acessos_medicos %}
+                            <tr class="linha-tabela">
+                                <td>{{ acesso.identificacao }}</td>
+                                <td>{{ acesso.status }}</td>
+                                <td>
+                                    <a href="{{ acesso.url.url }}" class="btn-default" style="text-decoration: none">Detalhes</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock 'conteudo' %}

@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 
 from usuarios.utils import escape
 
-from .models import PedidoExame, SolicitacaoExame, TipoExame
+from .models import AcessoMedico, PedidoExame, SolicitacaoExame, TipoExame
 
 
 @login_required(login_url='login')
@@ -113,3 +113,35 @@ def solicitar_senha_exame(request: HttpRequest, exame_id: int) -> HttpResponse:
         messages.error(request, 'Senha inválida!')
 
     return render(request, 'solicitar_senha_exame.html', {'exame': exame})
+
+
+@login_required(login_url='login')
+def gerar_acesso_medico(request: HttpRequest) -> HttpResponse:
+    if request.method == 'POST':
+        identificacao = escape(request.POST['identificacao'])
+        tempo_de_acesso = escape(request.POST['tempo_de_acesso'])
+        data_exame_inicial = escape(request.POST['data_exame_inicial'])
+        data_exame_final = escape(request.POST['data_exame_final'])
+
+        try:
+            acesso_medico =AcessoMedico(
+                usuario=request.user,
+                identificacao=identificacao,
+                tempo_de_acesso=tempo_de_acesso,
+                criado_em=datetime.now(),
+                data_exames_iniciais=data_exame_inicial,
+                data_exames_finais=data_exame_final,
+            )
+            acesso_medico.save()
+            messages.success(request, 'Acesso gerado com sucesso.')
+            return redirect(to='gerar_acesso_medico')
+
+        except:
+            messages.error(request, 'Erro interno do sistema.')
+            return redirect(to='gerar_acesso_medico')
+
+    acessos_medicos = AcessoMedico.objects.filter(usuario=request.user)
+    context = {
+        'acessos_medicos': acessos_medicos,
+    }
+    return render(request, 'gerar_acesso_medico.html', context)
