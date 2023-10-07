@@ -2,7 +2,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.models import User
 from django.db.models import Value
 from django.db.models.functions import Concat
-from django.http import HttpRequest, HttpResponse
+from django.http import FileResponse, HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, render
 
 from exames.models import SolicitacaoExame
@@ -40,3 +40,16 @@ def cliente(request: HttpRequest, cliente_id: int) -> HttpResponse:
         'exames': exames
     }
     return render(request, 'cliente.html', context)
+
+
+@staff_member_required
+def exame_cliente(request: HttpRequest, exame_id: int) -> HttpResponse:
+    exame = get_object_or_404(SolicitacaoExame, id=exame_id)
+    return render(request, 'exame_cliente.html', {'exame': exame})
+
+
+@staff_member_required
+def proxy_pdf(request:HttpRequest, exame_id: int) -> HttpResponse:
+    exame = get_object_or_404(SolicitacaoExame, id=exame_id)
+    response = exame.resultado.open()
+    return FileResponse(response)
