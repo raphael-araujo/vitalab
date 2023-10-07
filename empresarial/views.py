@@ -7,6 +7,8 @@ from django.shortcuts import get_object_or_404, render
 
 from exames.models import SolicitacaoExame
 
+from .utils import exportar_pdf, gerar_senha_aleatoria
+
 
 @staff_member_required
 def gerenciar_clientes(request: HttpRequest) -> HttpResponse:
@@ -49,7 +51,19 @@ def exame_cliente(request: HttpRequest, exame_id: int) -> HttpResponse:
 
 
 @staff_member_required
-def proxy_pdf(request:HttpRequest, exame_id: int) -> HttpResponse:
+def proxy_pdf(request:HttpRequest, exame_id: int) -> FileResponse:
     exame = get_object_or_404(SolicitacaoExame, id=exame_id)
     response = exame.resultado.open()
     return FileResponse(response)
+
+
+@staff_member_required
+def gerar_senha(request:HttpRequest, exame_id: int) -> HttpResponse:
+    exame = get_object_or_404(SolicitacaoExame, id=exame_id)
+
+    if exame.senha:
+        return exportar_pdf(exame.exame.nome, exame.usuario, exame.senha)
+
+    exame.senha = gerar_senha_aleatoria(tamanho=6)
+    exame.save()
+    return exportar_pdf(exame.exame.nome, exame.usuario, exame.senha)
