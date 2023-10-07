@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block 'title' %}Gerenciar clientes | Vitalab{% endblock  %}
+
+{% block 'conteudo' %}
+    <br> 
+    <br>
+    <div class="container">
+        {% if messages %}
+            <br>
+            {% for message in messages %}
+                <div class="alert {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        <div class="row">
+            <div class="col-md">
+                <form action="{% url "gerenciar_clientes" %}" method="GET">
+                <label for="">Nome</label>
+                <input type="text" class="form-control" name="nome" value="{% if nome %}{{nome}}{% endif %}">
+            </div>
+            <div class="col-md">
+                <label for="">E-mail</label>
+                <input type="text" class="form-control" name="email" value="{% if email %}{{email}}{% endif %}">
+            </div>
+            <div class="col-md">
+                <br>
+                <input value="Buscar" type="submit" class="btn-default"> &nbsp;&nbsp;&nbsp;
+                <a href="{% url "gerenciar_clientes" %}" class="btn btn-light" style="text-decoration: none">Limpar filtro</a>
+                </form>
+
+            </div>
+        </div>
+        <br>
+        <div class="card card-view">
+            <table>
+                {% if clientes %}
+                <tr>
+                    <th>Nome</th>
+                    <th>E-mail</th>
+                    <th>CPF</th>
+                </tr>
+                    {% for cliente in clientes|dictsort:"first_name" %}
+                        <tr class="linha-tabela">
+                            <td><a href="#">{{cliente.get_full_name}}</a></td>
+                            <td>{{cliente.email}}</td>
+                            
+                            <td>
+                                #
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <br>
+                    <h4>Nenhum cliente encontrado.</h4>
+                    <br>
+                {% endif %}
+                </table>
+
+            
+        </div>
+
+    </div>
+
+{% endblock 'conteudo' %}
