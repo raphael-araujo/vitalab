@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block 'title' %}Acesso médico | Vitalab{% endblock  %}
+
+{% block 'conteudo' %}
+    <br>
+    <br>
+    <div class="container">
+
+
+        <table>
+            <tr align="center">
+                <th>Exame</th>
+                <th>Status</th>
+            </tr>
+            {% for pedido in pedidos_exames %}
+                {% for exame in pedido.exames.all %}
+                <tr class="linha-tabela">
+                    <td>{{ exame.exame.nome}}</td>
+                    {% if exame.resultado %}
+                        <td>
+                            <a style="text-decoration: none;" class="btn-default" style="text-decoration: none" href="{{exame.resultado.url}}">Ver exame</a>
+                        </td>
+                    {% else %}
+                        <td align="center">{{ exame.get_status_display }}</td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            {% endfor %}
+        </table>
+    </div>
+{% endblock 'conteudo' %}

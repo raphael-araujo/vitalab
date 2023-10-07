@@ -145,3 +145,18 @@ def gerar_acesso_medico(request: HttpRequest) -> HttpResponse:
         'acessos_medicos': acessos_medicos,
     }
     return render(request, 'gerar_acesso_medico.html', context)
+
+
+def acesso_medico(request: HttpRequest, token: str) -> HttpResponse:
+    acesso_medico = get_object_or_404(AcessoMedico, token=token)
+    
+    if acesso_medico.status == 'Expirado':
+        messages.warning(request, 'Esse link já se expirou!')
+        return redirect(to='login')
+    
+    pedidos_exames = PedidoExame.objects.filter(
+        data__gte=acesso_medico.data_exames_iniciais,
+        data__lte=acesso_medico.data_exames_finais,
+        usuario=acesso_medico.usuario
+    )
+    return render(request, 'acesso_medico.html', {'pedidos_exames': pedidos_exames})
