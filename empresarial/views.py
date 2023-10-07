@@ -1,11 +1,13 @@
+from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.models import User
 from django.db.models import Value
 from django.db.models.functions import Concat
 from django.http import FileResponse, HttpRequest, HttpResponse
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
 
 from exames.models import SolicitacaoExame
+from usuarios.utils import sanitize_input
 
 from .utils import exportar_pdf, gerar_senha_aleatoria
 
@@ -67,3 +69,26 @@ def gerar_senha(request:HttpRequest, exame_id: int) -> HttpResponse:
     exame.senha = gerar_senha_aleatoria(tamanho=6)
     exame.save()
     return exportar_pdf(exame.exame.nome, exame.usuario, exame.senha)
+
+
+@staff_member_required
+def alterar_dados_exame(request:HttpRequest, exame_id: int) -> HttpResponse:
+    exame = get_object_or_404(SolicitacaoExame, id=exame_id)
+    
+    pdf = request.FILES.get('resultado')
+    status = sanitize_input(request.POST.get('status'))
+    requer_senha = sanitize_input(request.POST.get('requer_senha'))
+
+    if pdf:
+        exame.resultado = pdf
+
+    if requer_senha and (not exame.senha):
+        messages.error(request, 'Para exigir a senha, primeiro crie uma.')
+        return redirect(to='exame_cliente', exame_id=exame.id)
+
+    exame.requer_senha = True if requer_senha else False
+    exame.status = status
+    exame.save()
+
+    messages.success(request, 'Alteração realizada com sucesso.')
+    return redirect(to='exame_cliente', exame_id=exame.id)
