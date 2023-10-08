@@ -26,8 +26,8 @@
                     <br>
                     <br>
                     {% if exame.resultado %}
-                        <a class="btn btn-light" href="{% url "proxy_pdf" exame.id %}" target="__blank">
-                            <div style="width: 100%; text-decoration: none; color: black;" id="pdf-container">Abrir exame</div>
+                        <a href="{% url "proxy_pdf" exame.id %}" target="__blank">
+                            <div style="width: 100%; text-decoration: none; color: black;" id="pdf-container"></div>
                         </a>
                     {% endif %}
             </div>
@@ -54,7 +54,7 @@
     <script>
         const container = document.getElementById('pdf-container');
 
-        pdfjsLib.getDocument('').promise.then(pdf => {
+        pdfjsLib.getDocument('{% url "proxy_pdf" exame.id %}').promise.then(pdf => {
             pdf.getPage(1).then(page => {
                 const canvas = document.createElement('canvas');
                 const context = canvas.getContext('2d');
